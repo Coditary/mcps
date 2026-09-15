@@ -1,0 +1,17 @@
+# MCP server binaries (make build → bin/)
+bin/
+mcp-*
+
+# Go build artifacts (e.g. go build without -o in a module dir)
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# go test -c
+*.test
+
+# coverage / profiling
+*.out
+coverage.*

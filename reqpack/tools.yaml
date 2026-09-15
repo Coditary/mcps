@@ -1,0 +1,186 @@
+mcp:
+  name: reqpack
+  title: ReqPack MCP
+  version: v0.1.0
+  binary: rqp
+  binary_env: REQPACK_BIN
+  timeout: 10m
+
+tools:
+  - name: search
+    description: Search packages in a package manager ecosystem.
+    readonly: true
+    exec:
+      args: ["search", "{{system}}", "{{query}}"]
+    inputs:
+      system:
+        type: string
+        description: Package manager id (apt, npm, brew, ...)
+        required: true
+      query:
+        type: string
+        description: Search query
+        required: true
+    output:
+      kind: text
+
+  - name: list
+    description: List installed packages for a system or all systems.
+    readonly: true
+    exec:
+      args: ["list"]
+      when_args:
+        - when: system
+          args: ["{{system}}"]
+    inputs:
+      system:
+        type: string
+        description: Optional package manager id
+    output:
+      kind: text
+
+  - name: info
+    description: Show package metadata.
+    readonly: true
+    exec:
+      args: ["info", "{{system}}", "{{package}}"]
+    inputs:
+      system:
+        type: string
+        description: Package manager id
+        required: true
+      package:
+        type: string
+        description: Package name
+        required: true
+    output:
+      kind: text
+
+  - name: outdated
+    description: Show outdated packages.
+    readonly: true
+    exec:
+      args: ["outdated"]
+      when_args:
+        - when: system
+          args: ["{{system}}"]
+    inputs:
+      system:
+        type: string
+        description: Optional package manager id
+    output:
+      kind: text
+
+  - name: audit
+    description: Audit packages or a manifest directory for vulnerabilities.
+    readonly: true
+    exec:
+      args: ["audit"]
+      when_args:
+        - when: target
+          args: ["{{target}}"]
+        - when: format
+          args: ["--format", "{{format}}"]
+        - when: output
+          args: ["--output", "{{output}}"]
+    inputs:
+      target:
+        type: string
+        description: Path, manifest, or package spec (defaults to current directory)
+      format:
+        type: string
+        description: Output format
+        enum: [table, json, cyclonedx-vex-json, sarif]
+      output:
+        type: string
+        description: Optional output file path
+    output:
+      kind: json
+
+  - name: sbom
+    description: Export an SBOM for installed packages.
+    readonly: true
+    exec:
+      args: ["sbom"]
+      when_args:
+        - when: format
+          args: ["--format", "{{format}}"]
+        - when: output
+          args: ["--output", "{{output}}"]
+        - when: packages
+          args: ["{{packages}}"]
+    inputs:
+      packages:
+        type: string
+        description: Optional space-separated package specs
+      format:
+        type: string
+        description: SBOM format
+        enum: [table, json, cyclonedx-json]
+        default: cyclonedx-json
+      output:
+        type: string
+        description: Optional output file path
+    output:
+      kind: json
+
+  - name: snapshot
+    description: Write installed package state to a reqpack.lua manifest.
+    mutating: true
+    dry_run_flag: "--dry-run"
+    exec:
+      args: ["snapshot"]
+      when_args:
+        - when: output
+          args: ["--output", "{{output}}"]
+    inputs:
+      output:
+        type: string
+        description: Output manifest path
+        default: reqpack.lua
+    output:
+      kind: text
+
+  - name: install
+    description: Install packages. Uses dry-run unless confirm=true.
+    mutating: true
+    dry_run_flag: "--dry-run"
+    split_inputs: [packages]
+    exec:
+      args: ["install", "{{packages}}"]
+      when_args:
+        - when: manifest
+          args: ["{{manifest}}"]
+    inputs:
+      packages:
+        type: string
+        description: Space-separated package specs (e.g. apt:curl npm:express)
+      manifest:
+        type: string
+        description: Manifest directory path (alternative to packages)
+    output:
+      kind: text
+
+  - name: remove
+    description: Remove packages. Uses dry-run unless confirm=true.
+    mutating: true
+    dry_run_flag: "--dry-run"
+    split_inputs: [packages]
+    exec:
+      args: ["remove", "{{packages}}"]
+    inputs:
+      packages:
+        type: string
+        description: Space-separated package specs
+        required: true
+    output:
+      kind: text
+
+  - name: host_refresh
+    description: Refresh cached host metadata used by ReqPack.
+    readonly: true
+    exec:
+      args: ["host", "refresh"]
+    inputs: {}
+    output:
+      kind: text

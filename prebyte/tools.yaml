@@ -1,0 +1,58 @@
+mcp:
+  name: prebyte
+  title: Prebyte MCP
+  version: v0.1.0
+  binary: prebyte
+  binary_env: PREBYTE_BIN
+  timeout: 5m
+
+tools:
+  - name: render
+    description: Render a Prebyte template file to stdout or an output path.
+    readonly: true
+    exec:
+      args: ["render", "{{input}}"]
+      when_args:
+        - when: output
+          args: ["-o", "{{output}}"]
+        - when: vars
+          args: ["{{vars}}"]
+    inputs:
+      input:
+        type: string
+        description: Template file path
+        required: true
+      output:
+        type: string
+        description: Optional output file path
+      vars:
+        type: string
+        description: Space-separated variable assignments (key=value)
+    output:
+      kind: text
+
+  - name: lint
+    description: Lint a Prebyte template file.
+    readonly: true
+    exec:
+      args: ["lint", "{{input}}"]
+    inputs:
+      input:
+        type: string
+        description: Template file path
+        required: true
+    output:
+      kind: text
+
+  - name: validate
+    description: Validate template syntax without rendering.
+    readonly: true
+    exec:
+      args: ["validate", "{{input}}"]
+    inputs:
+      input:
+        type: string
+        description: Template file path
+        required: true
+    output:
+      kind: text

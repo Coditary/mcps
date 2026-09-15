@@ -1,0 +1,102 @@
+mcp:
+  name: tempify
+  title: Tempify MCP
+  version: v0.1.0
+  binary: tempify
+  binary_env: TEMPIFY_BIN
+  timeout: 10m
+
+tools:
+  - name: list
+    description: List available Tempify templates.
+    readonly: true
+    exec:
+      args: ["list", "--json"]
+    inputs: {}
+    output:
+      kind: json
+
+  - name: info
+    description: Show details for one template.
+    readonly: true
+    exec:
+      args: ["info", "{{template}}", "--json"]
+    inputs:
+      template:
+        type: string
+        description: Template id
+        required: true
+    output:
+      kind: json
+
+  - name: doctor
+    description: Check Tempify installation and registry health.
+    readonly: true
+    exec:
+      args: ["doctor", "--json"]
+    inputs: {}
+    output:
+      kind: json
+
+  - name: validate
+    description: Validate a template or rendered project.
+    readonly: true
+    exec:
+      args: ["validate", "{{target}}", "--json"]
+    inputs:
+      target:
+        type: string
+        description: Template id or project path
+        required: true
+    output:
+      kind: json
+
+  - name: inspect
+    description: Inspect template metadata and variables.
+    readonly: true
+    exec:
+      args: ["inspect", "{{template}}", "--json"]
+    inputs:
+      template:
+        type: string
+        description: Template id
+        required: true
+    output:
+      kind: json
+
+  - name: lint
+    description: Lint a template tree.
+    readonly: true
+    exec:
+      args: ["lint", "{{target}}", "--json"]
+    inputs:
+      target:
+        type: string
+        description: Template id or path
+        required: true
+    output:
+      kind: json
+
+  - name: process
+    description: Render a template into a target directory. Uses dry-run unless confirm=true.
+    mutating: true
+    dry_run_flag: "--dry-run"
+    exec:
+      args: ["process", "{{template}}", "{{output_dir}}", "--json"]
+      when_args:
+        - when: sets
+          args: ["{{sets}}"]
+    inputs:
+      template:
+        type: string
+        description: Template id
+        required: true
+      output_dir:
+        type: string
+        description: Output directory
+        required: true
+      sets:
+        type: string
+        description: Space-separated --set key=value pairs passed through to Tempify
+    output:
+      kind: json

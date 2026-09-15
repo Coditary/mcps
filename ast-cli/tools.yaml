@@ -1,0 +1,94 @@
+mcp:
+  name: ast-cli
+  title: AST CLI MCP
+  version: v0.1.0
+  binary: ast-cli
+  binary_env: AST_CLI_BIN
+  timeout: 2m
+
+tools:
+  - name: parse
+    description: Parse a source file to AST using a Tree-sitter grammar plugin.
+    readonly: true
+    exec:
+      args: ["parse", "{{language}}", "{{input}}", "--format", "{{format}}"]
+      when_args:
+        - when: output
+          args: ["-o", "{{output}}"]
+        - when: pretty
+          args: ["--pretty"]
+    inputs:
+      language:
+        type: string
+        description: Grammar language key (rust, json, ...)
+        required: true
+      input:
+        type: string
+        description: Input file path or - for stdin
+        required: true
+      format:
+        type: string
+        description: Output format
+        enum: [messagepack, json, stdout, cst]
+        default: json
+      output:
+        type: string
+        description: Optional output file path
+      pretty:
+        type: boolean
+        description: Pretty-print JSON output
+        default: false
+    output:
+      kind: json
+
+  - name: batch
+    description: Parse multiple files in parallel.
+    readonly: true
+    split_inputs: [files]
+    exec:
+      args: ["batch", "{{language}}", "{{files}}", "--format", "{{format}}"]
+      when_args:
+        - when: output_dir
+          args: ["-d", "{{output_dir}}"]
+        - when: output
+          args: ["-o", "{{output}}"]
+    inputs:
+      language:
+        type: string
+        description: Grammar language key
+        required: true
+      files:
+        type: string
+        description: Space-separated input file paths
+        required: true
+      format:
+        type: string
+        description: Output format
+        enum: [messagepack, json, stdout, cst]
+        default: json
+      output_dir:
+        type: string
+        description: Directory for per-file outputs
+      output:
+        type: string
+        description: Bundle output file (MessagePack only)
+    output:
+      kind: json
+
+  - name: plugins_list
+    description: List configured grammar plugins.
+    readonly: true
+    exec:
+      args: ["plugins", "list"]
+    inputs: {}
+    output:
+      kind: text
+
+  - name: limits
+    description: Print parser safety limits enforced by ast-cli.
+    readonly: true
+    exec:
+      args: ["limits"]
+    inputs: {}
+    output:
+      kind: text

@@ -1,0 +1,49 @@
+mcp:
+  name: ipmc
+  title: Impact Map CLI MCP
+  version: v0.1.0
+  binary: ipmc
+  binary_env: IPMC_BIN
+  timeout: 2m
+
+tools:
+  - name: render
+    description: Render a KDL impact map to SVG, PNG, or DOT.
+    readonly: true
+    exec:
+      args: ["{{input}}", "-f", "{{format}}", "-o", "{{out}}"]
+      when_args:
+        - when: goal
+          args: ["-g", "{{goal}}"]
+        - when: keep_dot
+          args: ["--keep-dot"]
+        - when: verbose
+          args: ["-v"]
+    inputs:
+      input:
+        type: string
+        description: Path to the KDL impact map file
+        required: true
+      goal:
+        type: string
+        description: Optional goal id (e.g. GOAL-02)
+      format:
+        type: string
+        description: Output format
+        enum: [svg, png, dot]
+        default: svg
+      out:
+        type: string
+        description: Output directory or exact filename without extension when goal is set
+        default: .
+      keep_dot:
+        type: boolean
+        description: Keep intermediate DOT file after rendering
+        default: false
+      verbose:
+        type: boolean
+        description: Enable verbose logging
+        default: false
+    output:
+      kind: files_glob
+      pattern: "{{out}}/*"

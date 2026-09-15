@@ -1,0 +1,95 @@
+mcp:
+  name: beez
+  title: Beez MCP
+  version: v0.1.0
+  binary: beez
+  binary_env: BEEZ_BIN
+  timeout: 30m
+
+tools:
+  - name: list_entities
+    description: List registered Beez tasks, workflows, steps, or phases.
+    readonly: true
+    exec:
+      args: ["--list", "{{kind}}"]
+    inputs:
+      kind:
+        type: string
+        description: Entity kind to list
+        enum: [tasks, workflows, steps, phases]
+        required: true
+    output:
+      kind: text
+
+  - name: show_config
+    description: Show merged active Beez configuration.
+    readonly: true
+    exec:
+      args: ["--show-config"]
+    inputs: {}
+    output:
+      kind: text
+
+  - name: dry_run
+    description: Build the execution graph without running Lua scripts.
+    readonly: true
+    exec:
+      args: ["--dry-run", "{{target}}"]
+      when_args:
+        - when: phase
+          args: ["-p", "{{phase}}"]
+    inputs:
+      target:
+        type: string
+        description: Task or workflow name
+        required: true
+      phase:
+        type: string
+        description: Optional phase filter
+    output:
+      kind: text
+
+  - name: run_step
+    description: Run a single Beez step by name. Uses dry-run unless confirm=true.
+    mutating: true
+    dry_run_flag: "--dry-run"
+    exec:
+      args: ["-s", "{{step}}"]
+      when_args:
+        - when: threads
+          args: ["-j", "{{threads}}"]
+    inputs:
+      step:
+        type: string
+        description: Step name
+        required: true
+      threads:
+        type: integer
+        description: Worker thread count
+    output:
+      kind: text
+
+  - name: run_target
+    description: Run a Beez task or workflow. Uses dry-run unless confirm=true.
+    mutating: true
+    dry_run_flag: "--dry-run"
+    exec:
+      args: ["{{target}}"]
+      when_args:
+        - when: phase
+          args: ["-p", "{{phase}}"]
+        - when: threads
+          args: ["-j", "{{threads}}"]
+    inputs:
+      target:
+        type: string
+        description: Task or workflow name
+        required: true
+      phase:
+        type: string
+        description: Optional phase filter
+      threads:
+        type: integer
+        description: Worker thread count
+    output:
+      kind: text
