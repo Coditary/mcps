@@ -3,7 +3,7 @@ go 1.25.0
 use (
 	./pkg
 	./reqpack
-	./ast-cli
+	./parser-cli
 	./ipmc
 	./tempify
 	./prebyte

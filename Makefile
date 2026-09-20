@@ -1,4 +1,4 @@
-SERVERS := reqpack ast-cli ipmc tempify prebyte beez ycallr
+SERVERS := reqpack parser-cli ipmc tempify prebyte beez ycallr
 
 .PHONY: all tidy build clean
 

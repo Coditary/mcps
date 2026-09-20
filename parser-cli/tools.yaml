@@ -1,9 +1,9 @@
 mcp:
-  name: ast-cli
-  title: AST CLI MCP
+  name: parser-cli
+  title: Parser CLI MCP
   version: v0.1.0
-  binary: ast-cli
-  binary_env: AST_CLI_BIN
+  binary: parser-cli
+  binary_env: PARSER_CLI_BIN
   timeout: 2m
 
 tools:
@@ -85,7 +85,7 @@ tools:
       kind: text
 
   - name: limits
-    description: Print parser safety limits enforced by ast-cli.
+    description: Print parser safety limits enforced by parser-cli.
     readonly: true
     exec:
       args: ["limits"]

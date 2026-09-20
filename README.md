@@ -10,7 +10,7 @@ Wuji is intentionally **not** included here. Wuji orchestrates MCP servers itsel
 plugins/mcps/
 ├── pkg/                 # shared wrapper library (config, exec, schema, server)
 ├── reqpack/             # declarative MCP (tools.yaml + main.go)
-├── ast-cli/
+├── parser-cli/
 ├── ipmc/
 ├── tempify/
 ├── prebyte/
@@ -29,7 +29,7 @@ Most servers are **declarative**: `tools.yaml` describes how CLI arguments map t
 | MCP binary | Wrapped CLI | Env override | Notes |
 |------------|-------------|--------------|-------|
 | `mcp-reqpack` | `rqp` | `REQPACK_BIN` | Package management, audit, SBOM |
-| `mcp-ast-cli` | `ast-cli` | `AST_CLI_BIN` | Tree-sitter AST parsing |
+| `mcp-parser-cli` | `parser-cli` | `PARSER_CLI_BIN` | Tree-sitter AST parsing |
 | `mcp-ipmc` | `ipmc` | `IPMC_BIN` | Impact map rendering |
 | `mcp-tempify` | `tempify` | `TEMPIFY_BIN` | Template scaffolding |
 | `mcp-prebyte` | `prebyte` | `PREBYTE_BIN` | Template preprocessing |
@@ -57,8 +57,8 @@ Binaries are written to `plugins/mcps/bin/`.
     "reqpack": {
       "command": "/absolute/path/to/Coditary/plugins/mcps/bin/mcp-reqpack"
     },
-    "ast-cli": {
-      "command": "/absolute/path/to/Coditary/plugins/mcps/bin/mcp-ast-cli"
+    "parser-cli": {
+      "command": "/absolute/path/to/Coditary/plugins/mcps/bin/mcp-parser-cli"
     }
   }
 }
